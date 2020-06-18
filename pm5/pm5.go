@@ -36,10 +36,7 @@ func NewClient() (*pm5Client, error) {
 
 	pm5.client = cln
 
-	// listen for disconnections and cleanup if so
-
 	log.Printf("%s: Discovering profiles\n", pm5.Name)
-
 	p, err := pm5.client.DiscoverProfile(false)
 	if err != nil {
 		log.Printf("Can't discover profiles: %s\n", err)
@@ -60,7 +57,6 @@ func NewClient() (*pm5Client, error) {
 func (pm5 *pm5Client) Subscribe() error {
 
 	pm5.DataCh = make(chan []byte)
-
 	go func() {
 		<-pm5.client.Disconnected()
 		log.Printf("[ %s ] is disconnected \n", pm5.client.Addr())
@@ -72,6 +68,7 @@ func (pm5 *pm5Client) Subscribe() error {
 }
 
 func (pm5 *pm5Client) filter(a ble.Advertisement) bool {
+
 	fmt.Printf("device found: %v\n", a.LocalName())
 	if strings.HasPrefix(a.LocalName(), "PM5") {
 		fmt.Printf("PM5 connectable: %v\n", a.Connectable())
@@ -88,6 +85,6 @@ func (pm5 *pm5Client) notifyHandler(req []byte) {
 	case pm5.DataCh <- req:
 		// nothing to do
 	default:
-		// fine to skip some data if there is nowhere to send itc
+		// fine to skip some data if there is nowhere to send it
 	}
 }
