@@ -11,11 +11,18 @@ import (
 	"github.com/mrverrall/go-row-cycle/pm5"
 )
 
-func main() {
-	for {
-		setBT()
+var deviceName string = "go-row-cycle"
 
-		cpm := cpm.NewServer()
+func main() {
+
+	for {
+		d, err := linux.NewDeviceWithName(deviceName)
+		if err != nil {
+			log.Fatalf("Can't get  BT device: %s", err)
+		}
+		ble.SetDefaultDevice(d)
+
+		cpm := cpm.NewServer(deviceName)
 
 		pm5, err := pm5.NewClient()
 		if err != nil {
@@ -24,31 +31,15 @@ func main() {
 			continue
 		}
 
-		if err := pm5.Subscribe(); err != nil {
-			log.Printf("Failed to subscribe to PM5 Notifications")
-			unsetBT()
-			continue
-		}
-
 		for data := range pm5.DataCh {
-
 			cycleData := convertPM5toCPM(data)
 			select {
 			case cpm.DataCh <- cycleData:
 			default:
 			}
 		}
-
 		unsetBT()
 	}
-}
-
-func setBT() {
-	d, err := linux.NewDevice()
-	if err != nil {
-		log.Fatalf("Can't get  BT device : %s", err)
-	}
-	ble.SetDefaultDevice(d)
 }
 
 func unsetBT() {

@@ -2,7 +2,6 @@ package cpm
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -17,15 +16,18 @@ var (
 	cslCharUUID = ble.UUID16(0x2a5d)
 )
 
-type cpService struct {
+// Service A Bluetooth LE Cycle Power Service with a Data Channel for upstream notifications (power and cadence)
+type Service struct {
 	Name    string
 	DataCh  chan []byte
 	service *ble.Service
 }
 
-func NewServer() *cpService {
+// NewServer Create a new Bluetooth LE Cycle Power Service and advertise indefinitly
+func NewServer(deviceName string) *Service {
 
-	cps := &cpService{}
+	cps := &Service{}
+	cps.Name = deviceName
 
 	cps.service = ble.NewService(cpSvcUUID)
 	cps.service.AddCharacteristic(cps.simpleReadChr(cpfCharUUID, []byte{0x8, 0x0, 0x0, 0x0}))
@@ -34,12 +36,12 @@ func NewServer() *cpService {
 	cps.service.AddCharacteristic(cps.newCpmChar())
 	ble.AddService(cps.service)
 
-	go ble.AdvertiseNameAndServices(context.Background(), "GoRowCycle", cpSvcUUID)
+	go ble.AdvertiseNameAndServices(context.Background(), deviceName, cpSvcUUID)
 
 	return cps
 }
 
-func (cps *cpService) newCpmChar() *ble.Characteristic {
+func (cps *Service) newCpmChar() *ble.Characteristic {
 
 	cps.DataCh = make(chan []byte)
 	c := ble.NewCharacteristic(cpmChrUUID)
@@ -48,7 +50,7 @@ func (cps *cpService) newCpmChar() *ble.Characteristic {
 	return c
 }
 
-func (cps cpService) simpleReadChr(u ble.UUID, d []byte) *ble.Characteristic {
+func (cps Service) simpleReadChr(u ble.UUID, d []byte) *ble.Characteristic {
 
 	c := ble.NewCharacteristic(u)
 	c.HandleRead(ble.ReadHandlerFunc(func(req ble.Request, rsp ble.ResponseWriter) {
@@ -58,9 +60,9 @@ func (cps cpService) simpleReadChr(u ble.UUID, d []byte) *ble.Characteristic {
 	return c
 }
 
-func (cps *cpService) notifyHandler(req ble.Request, n ble.Notifier) {
+func (cps *Service) notifyHandler(req ble.Request, n ble.Notifier) {
 
-	fmt.Println("Client Subscribed for Notifications...")
+	log.Println("Client Subscribed for Notifications...")
 
 	defaultPacket := []byte{0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 	timeout := time.Second * 5
@@ -77,7 +79,7 @@ func (cps *cpService) notifyHandler(req ble.Request, n ble.Notifier) {
 				return
 			}
 		case <-time.After(timeout):
-			log.Printf("Downstream timeout sending default packet: %s", timeout)
+			log.Printf("Downstream timeout (%s), sending default packet.", timeout)
 			_, err := n.Write(defaultPacket)
 			if err != nil {
 				log.Printf("Client missing for notification: %s", err)

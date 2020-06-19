@@ -2,7 +2,6 @@ package pm5
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -15,17 +14,19 @@ var (
 	pm5ChrUUID = ble.MustParse("CE060036-43E5-11E4-916C-0800200C9A66")
 )
 
-type pm5Client struct {
-	Name           string
+// Client a Bluetooth LE Client connection to a PM5 rowing computer with a data channel for noticications receiced from it's service
+type Client struct {
+	clientName     string
 	DataCh         chan []byte
 	client         ble.Client
 	service        *ble.Service
 	characteristic *ble.Characteristic
 }
 
-func NewClient() (*pm5Client, error) {
+// NewClient Searches for and connects to the first PM5 it can
+func NewClient() (*Client, error) {
 
-	pm5 := &pm5Client{}
+	pm5 := &Client{}
 	ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), 60*time.Second))
 
 	log.Printf("Searching for sensors...\n")
@@ -36,7 +37,7 @@ func NewClient() (*pm5Client, error) {
 
 	pm5.client = cln
 
-	log.Printf("%s: Discovering profiles\n", pm5.Name)
+	log.Printf("%s: Discovering profiles\n", pm5.clientName)
 	p, err := pm5.client.DiscoverProfile(false)
 	if err != nil {
 		log.Printf("Can't discover profiles: %s\n", err)
@@ -48,42 +49,43 @@ func NewClient() (*pm5Client, error) {
 			if c.UUID.String() == pm5ChrUUID.String() {
 				pm5.service = s
 				pm5.characteristic = c
+				if err := pm5.subscribe(); err != nil {
+					log.Printf("Failed to subscribe to PM5 Notifications")
+					return nil, err
+				}
 			}
 		}
 	}
 	return pm5, nil
 }
 
-func (pm5 *pm5Client) Subscribe() error {
+func (pm5 *Client) subscribe() error {
 
 	pm5.DataCh = make(chan []byte)
 	go func() {
 		<-pm5.client.Disconnected()
-		log.Printf("[ %s ] is disconnected \n", pm5.client.Addr())
+		log.Printf("%s: disconnected \n", pm5.client.Addr())
 		close(pm5.DataCh)
 	}()
 
-	log.Printf("%s: Subscribe to notification", pm5.Name)
+	log.Printf("%s: Subscribe to notification", pm5.clientName)
 	return pm5.client.Subscribe(pm5.characteristic, false, pm5.notifyHandler)
 }
 
-func (pm5 *pm5Client) filter(a ble.Advertisement) bool {
+func (pm5 *Client) filter(a ble.Advertisement) bool {
 
-	fmt.Printf("device found: %v\n", a.LocalName())
+	log.Printf("device found: %v\n", a.LocalName())
 	if strings.HasPrefix(a.LocalName(), "PM5") {
-		fmt.Printf("PM5 connectable: %v\n", a.Connectable())
-
 		return a.Connectable()
 	}
 	return false
 }
 
-func (pm5 *pm5Client) notifyHandler(req []byte) {
-
-	// we want live data so no buffering
+func (pm5 *Client) notifyHandler(req []byte) {
+	// only realtime live data is valid so no buffering
 	select {
 	case pm5.DataCh <- req:
-		// nothing to do
+		// data sent, nothing else to do
 	default:
 		// fine to skip some data if there is nowhere to send it
 	}
