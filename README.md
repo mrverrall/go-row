@@ -10,17 +10,23 @@ A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing 
 * Requires kernel support for HCI_CHANNEL_USER (v3.14+)
 
 # TL;DR
-    go build go-row-cycle.go
-    ./go-row-cycle
+    apt-get install golang
+    go get "github.com/mrverrall/go-row-cycle"
+    go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
+    sudo ./go-row-cycle
 
-# Building
-Go is a compiled language. To compile go-row-cycle.go into an executable install the Go compliler (if you don't have it already). For example in Raspbian:
+# Obtaining and Building
+To compile go-row-cycle.go into an executable for your system install the Go compliler:
 
     sudo apt-get install golang
 
+Rather that cloning this repo, the easiest way to get go-row-cycle along with all it's dependancies is using 'go get':
+
+    go get "github.com/mrverrall/go-row-cycle"
+
 Then build:
 
-    go build go-row-cycle.go
+    go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
 
 # First Run
 Ensure your BT device meets minimum version (4.1) Raspberry Pis with built in Bluetooth chipsets are fine.
