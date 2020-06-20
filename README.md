@@ -16,11 +16,11 @@ A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing 
     sudo ./go-row-cycle
 
 # Obtaining and Building
-To compile go-row-cycle.go into an executable for your system install the Go compliler:
+To Compile go-row-cycle.go into an executable the Go compliler is required:
 
     sudo apt-get install golang
 
-Rather that cloning this repo, the easiest way to get go-row-cycle along with all it's dependancies is using 'go get':
+The easiest way to get go-row-cycle along with all it's dependancies is using 'go get':
 
     go get "github.com/mrverrall/go-row-cycle"
 
