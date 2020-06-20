@@ -65,7 +65,7 @@ func (cps *Service) notifyHandler(req ble.Request, n ble.Notifier) {
 	log.Println("Client Subscribed for Notifications...")
 
 	defaultPacket := []byte{0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-	timeout := time.Second * 5
+	timeout := time.Second * 4
 
 	for {
 		select {
