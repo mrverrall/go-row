@@ -29,7 +29,7 @@ func NewClient() (*Client, error) {
 	pm5 := &Client{}
 	ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), 60*time.Second))
 
-	log.Printf("Searching for sensors...\n")
+	log.Printf("Searching for PM5...\n")
 	cln, err := ble.Connect(ctx, pm5.filter)
 	if err != nil {
 		return nil, err
