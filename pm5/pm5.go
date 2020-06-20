@@ -74,8 +74,8 @@ func (pm5 *Client) subscribe() error {
 
 func (pm5 *Client) filter(a ble.Advertisement) bool {
 
-	log.Printf("device found: %v\n", a.LocalName())
 	if strings.HasPrefix(a.LocalName(), "PM5") {
+		log.Printf("Device found: %s\n", a.LocalName())
 		return a.Connectable()
 	}
 	return false
