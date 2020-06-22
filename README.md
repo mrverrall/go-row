@@ -1,5 +1,5 @@
 # go-row-cycle
-A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing computer into a Bluetooth Cycle Power Service for use in common cycle gaming platforms. go-row-cycle transmits power and cadance (spm).
+A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing computer into a Bluetooth Cycle Power Service for use in cycle gaming platforms such a Zwift. go-row-cycle transmits power and cadence (spm).
 
 ## Good to know...
 * Runs on Debian, Ubuntu, Raspbian... etc.
