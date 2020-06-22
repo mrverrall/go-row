@@ -79,7 +79,6 @@ func (cps *Service) notifyHandler(req ble.Request, n ble.Notifier) {
 				return
 			}
 		case <-time.After(timeout):
-			log.Printf("Downstream timeout (%s), sending default packet.", timeout)
 			_, err := n.Write(defaultPacket)
 			if err != nil {
 				log.Printf("Client missing for notification: %s", err)

@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/binary"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/go-ble/ble"
@@ -15,21 +18,38 @@ var deviceName string = "go-row-cycle"
 
 func main() {
 
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	defer unsetBT()
+
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		log.Printf("signal received from os: %s", sig)
+		done <- true
+	}()
+	go btWorker(done)
+	<-done
+}
+
+func btWorker(done chan bool) {
 	for {
+		unsetBT()
 		d, err := linux.NewDeviceWithName(deviceName)
 		if err != nil {
-			log.Fatalf("Can't get  BT device: %s", err)
+			log.Printf("can't get  BT device: %s", err)
+			done <- true
 		}
 		ble.SetDefaultDevice(d)
 
-		cpm := cpm.NewServer(deviceName)
-
+		log.Printf("searching for PM5...")
 		pm5, err := pm5.NewClient()
 		if err != nil {
-			log.Printf("Failed to get PM5 client")
-			unsetBT()
+			log.Printf("PM5 error: %s", err)
 			continue
 		}
+
+		cpm := cpm.NewServer(deviceName)
 
 		for data := range pm5.DataCh {
 			cycleData := convertPM5toCPM(data)
@@ -38,7 +58,6 @@ func main() {
 			default:
 			}
 		}
-		unsetBT()
 	}
 }
 
