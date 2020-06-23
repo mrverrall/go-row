@@ -31,7 +31,7 @@ func NewClient() (*Client, error) {
 		ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), 10*time.Second))
 		cln, err := ble.Connect(ctx, pm5.filter)
 		if err != nil {
-			if err != context.DeadlineExceeded {
+			if err.Error() != "can't scan: context deadline exceeded" {
 				return nil, fmt.Errorf("Unresolvable connection error: %s", err)
 			}
 			time.Sleep(time.Second * 10)
