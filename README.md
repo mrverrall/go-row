@@ -1,12 +1,12 @@
 # go-row-cycle
-A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing computer into a Bluetooth Cycle Power Service for use in cycle gaming platforms such a Zwift. go-row-cycle transmits power and cadence (spm).
+A Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Bluetooth Cycle Power Service. This enables you to use a Concept2 rower in cycling games such a Zwift. go-row-cycle transmits both power and cadence (spm).
 
 ## Good to know...
 * Runs on Debian, Ubuntu, Raspbian... etc.
 * Runs well on a Raspberry Pi Zero W
 
 ## But specifically..
-* Requires Bluetooth 4.1+ chipsets
+* Requires Bluetooth 4.1+ chipsets (can run clients and servers simultaneously)
 * Requires kernel support for HCI_CHANNEL_USER (v3.14+)
 
 # TL;DR
@@ -16,7 +16,7 @@ A Bluetooth LE bridge, written in Go to convert data from a Concept2 PM5 rowing 
     sudo ./go-row-cycle
 
 # Obtaining and Building
-To Compile go-row-cycle.go into an executable the Go compliler is required:
+To compile go-row-cycle.go into an executable the Go compliler is required:
 
     sudo apt-get install golang
 
@@ -28,7 +28,7 @@ Then build:
 
     go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
 
-# First Run
+# First Row
 Ensure your BT device meets minimum version (4.1) Raspberry Pis with built in Bluetooth chipsets are fine.
 
     sudo hciconfig hci0 up
@@ -76,8 +76,8 @@ Run!
     ./go-row-cycle
 
 # Connecting to your Rower and Game
-When a PM5 rower is not connected go-row-cycle is continually scanning for one. While go-row-cyle is running simply turn on wireless on the PM5 in the usual manner, connection will occure within 5 seconds.
+While go-row-cyle is running simply turn on wireless on the PM5 in the usual manner, connection is automatic.
 
-While running, go-row-cycle will always advertise a Cycle Power Service over Bluetooth LE. Within your Bluetooth enabled cycle game select the 'GoRowCycle' device for power and cadance.
+Once connected to a PM5 go-row-cycle will advertise the Cycle Power Service over Bluetooth. Within your Bluetooth enabled cycle game select the 'go-row-cycle' device for power and cadance.
 
 Row!
