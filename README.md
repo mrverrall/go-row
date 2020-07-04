@@ -15,6 +15,10 @@ A Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Blu
     go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
     sudo ./go-row-cycle
 
+You can also set the -dc flag to double the rowers SPM to a more realistic cadence,
+
+    sudo ./go-row-cycle -dc
+
 # Obtaining and Building
 To compile go-row-cycle.go into an executable the Go compliler is required:
 
