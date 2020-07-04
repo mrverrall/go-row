@@ -30,6 +30,7 @@ func main() {
 	go func() {
 		sig := <-sigs
 		log.Printf("signal received from os: %s", sig)
+		unsetBT()
 		done <- true
 	}()
 	go btWorker(done)
