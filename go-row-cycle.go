@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -14,13 +15,16 @@ import (
 	"github.com/mrverrall/go-row-cycle/pm5"
 )
 
-var deviceName string = "go-row-cycle"
+var (
+	deviceName    = "go-row-cycle"
+	doubleCadence = flag.Bool("dc", false, "double spm for cadance")
+)
 
 func main() {
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
-	defer unsetBT()
+	flag.Parse()
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -78,8 +82,18 @@ func convertPM5toCPM(d []byte) []byte {
 	elapsedTime32 = (elapsedTime32 * 1024) / 100
 	binary.LittleEndian.PutUint32(elapsedTime, elapsedTime32)
 
-	copy(cyclePacket[2:], d[3:5])
-	copy(cyclePacket[4:], d[7:9])
+	// Elapsed time
 	copy(cyclePacket[6:], elapsedTime[0:3])
+
+	// Power
+	copy(cyclePacket[2:], d[3:5])
+
+	// Stroke Count
+	if *doubleCadence {
+		spm := binary.LittleEndian.Uint16(d[7:9])
+		binary.LittleEndian.PutUint16(cyclePacket[4:], spm*2)
+	} else {
+		copy(cyclePacket[4:], d[7:9])
+	}
 	return cyclePacket
 }
