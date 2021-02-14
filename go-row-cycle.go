@@ -60,18 +60,24 @@ func btWorker(done chan bool) {
 		cpm := cpm.NewServer(deviceName)
 
 		// NEED TO CACHE THE RUN DATA AND ONLY TRANSMIT ON THE STROKE DATA
-		runData := []byte{}
+
+		lastStroke := time.Now()
 		for data := range rower.DataCh {
 			// fmt.Printf("first byte: %v\n", data[0])
 			switch data[0] {
 			case 50:
 				// row status for run data, but does not imply active running
-				runData = convertPM5toRSC(data)
+				// 6 second timeout between strokes, i.e. 10 SPM??
+				if time.Since(lastStroke) < time.Second*6 {
+					select {
+					case rsc.DataCh <- convertPM5toRSC(data):
+					default:
+					}
+				}
 			case 54:
 				select {
 				case cpm.DataCh <- convertPM5toCPM(data):
-					// send our run data on an stroke, i.e. we are rowing
-					rsc.DataCh <- runData
+					lastStroke = time.Now()
 				default:
 				}
 			}

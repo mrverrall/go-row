@@ -74,7 +74,7 @@ func NewServer(deviceName string) *Service {
 
 func (rsc *Service) newRSCChar() *ble.Characteristic {
 
-	rsc.DataCh = make(chan []byte)
+	rsc.DataCh = make(chan []byte, 1)
 	c := ble.NewCharacteristic(rscMesurmentCharUUID)
 	c.HandleNotify(ble.NotifyHandlerFunc(rsc.notifyHandler))
 
@@ -98,7 +98,7 @@ func (rsc *Service) notifyHandler(req ble.Request, n ble.Notifier) {
 	log.Println("Client Subscribed for Notifications...")
 
 	defaultPacket := []byte{0x0, 0x0, 0x0, 0x0}
-	timeout := time.Second * 4
+	timeout := time.Second * 8
 
 	for {
 		select {
@@ -113,6 +113,7 @@ func (rsc *Service) notifyHandler(req ble.Request, n ble.Notifier) {
 			}
 		case <-time.After(timeout):
 			_, err := n.Write(defaultPacket)
+			log.Println("Waiting for data...")
 			if err != nil {
 				log.Printf("Client missing for notification: %s", err)
 				return
