@@ -11,21 +11,28 @@ import (
 )
 
 var (
-	pm5SvcUUID = ble.MustParse("CE060030-43E5-11E4-916C-0800200C9A66")
-	pm5ChrUUID = ble.MustParse("CE060036-43E5-11E4-916C-0800200C9A66")
+	svcUUID = ble.MustParse("CE060030-43E5-11E4-916C-0800200C9A66")
+	// multiChr C2 multiplexed information characteristic
+	multiChr = ble.MustParse("CE060080-43E5-11E4-916C-0800200C9A66")
 )
 
 // Client a Bluetooth LE Client connection to a PM5 rowing computer with a data channel for noticications receiced from it's service
 type Client struct {
-	name           string
-	DataCh         chan []byte
-	client         ble.Client
-	characteristic *ble.Characteristic
+	name   string
+	DataCh chan []byte
+	client ble.Client
+	//characteristics []*ble.Characteristic
+}
+
+type characteristic struct {
+	UUID    ble.UUID
+	Handler ble.NotificationHandler
 }
 
 // NewClient Searches for and connects to the first PM5 it can
 func NewClient() (*Client, error) {
 	pm5 := &Client{}
+	pm5.DataCh = make(chan []byte)
 
 	for pm5.client == nil {
 		ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), 10*time.Second))
@@ -38,41 +45,47 @@ func NewClient() (*Client, error) {
 		}
 		pm5.client = cln
 	}
+	err := pm5.SubscribeToCharacteristics([]ble.UUID{multiChr})
+	if err != nil {
+		return nil, fmt.Errorf("Subscription error: %s", err)
+	}
+	return pm5, nil
+}
+
+// SubscribeToCharacteristics Subscribe to notifications for charcteristics
+func (pm5 *Client) SubscribeToCharacteristics(chrs []ble.UUID) error {
 
 	log.Printf("%s: scanning for services", pm5.name)
 	p, err := pm5.client.DiscoverProfile(false)
 	if err != nil {
 		ble.Client.CancelConnection(pm5.client)
-		return nil, fmt.Errorf("%s: can't discover Service", err)
+		return fmt.Errorf("%s: can't discover Service", err)
 	}
 
 	for _, s := range p.Services {
 		for _, c := range s.Characteristics {
-			if c.UUID.String() == pm5ChrUUID.String() {
-				pm5.characteristic = c
-				if err := pm5.subscribe(); err != nil {
-					return nil, fmt.Errorf("failed to subscribe to PM5 notifications: %s", err)
+			for _, chr := range chrs {
+				if c.UUID.String() == chr.String() {
+					if err := pm5.subscribe(c); err != nil {
+						return fmt.Errorf("failed to subscribe: %s", err)
+					}
 				}
 			}
 		}
 	}
-	if pm5.characteristic == nil {
-		return nil, fmt.Errorf("%s: failed to identify compatible service", pm5.name)
-	}
-	return pm5, nil
+	return nil
 }
 
-func (pm5 *Client) subscribe() error {
+func (pm5 *Client) subscribe(c *ble.Characteristic) error {
 
-	pm5.DataCh = make(chan []byte)
 	go func() {
 		<-pm5.client.Disconnected()
 		log.Printf("%s: disconnected \n", pm5.client.Addr())
 		close(pm5.DataCh)
 	}()
 
-	log.Printf("%s: subscribe to notification", pm5.name)
-	return pm5.client.Subscribe(pm5.characteristic, false, pm5.notifyHandler)
+	log.Printf("%s: subscribing to notifications for %s", pm5.name, c.UUID.String())
+	return pm5.client.Subscribe(c, false, pm5.notifyHandler)
 }
 
 func (pm5 *Client) filter(a ble.Advertisement) bool {

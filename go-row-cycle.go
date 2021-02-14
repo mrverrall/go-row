@@ -13,10 +13,11 @@ import (
 	"github.com/go-ble/ble/linux"
 	"github.com/mrverrall/go-row-cycle/cpm"
 	"github.com/mrverrall/go-row-cycle/pm5"
+	"github.com/mrverrall/go-row-cycle/rsc"
 )
 
 var (
-	deviceName    = "go-row-cycle"
+	deviceName    = "go-row"
 	doubleCadence = flag.Bool("dc", false, "double spm for cadance")
 )
 
@@ -48,19 +49,31 @@ func btWorker(done chan bool) {
 		ble.SetDefaultDevice(d)
 
 		log.Printf("searching for PM5...")
-		pm5, err := pm5.NewClient()
+		rower, err := pm5.NewClient()
+
 		if err != nil {
 			log.Printf("PM5 error: %s", err)
 			continue
 		}
 
+		rsc := rsc.NewServer(deviceName)
 		cpm := cpm.NewServer(deviceName)
 
-		for data := range pm5.DataCh {
-			cycleData := convertPM5toCPM(data)
-			select {
-			case cpm.DataCh <- cycleData:
-			default:
+		// NEED TO CACHE THE RUN DATA AND ONLY TRANSMIT ON THE STROKE DATA
+		runData := []byte{}
+		for data := range rower.DataCh {
+			// fmt.Printf("first byte: %v\n", data[0])
+			switch data[0] {
+			case 50:
+				// row status for run data, but does not imply active running
+				runData = convertPM5toRSC(data)
+			case 54:
+				select {
+				case cpm.DataCh <- convertPM5toCPM(data):
+					// send our run data on an stroke, i.e. we are rowing
+					rsc.DataCh <- runData
+				default:
+				}
 			}
 		}
 	}
@@ -69,6 +82,20 @@ func btWorker(done chan bool) {
 func unsetBT() {
 	ble.Stop()
 	time.Sleep(time.Second * 5)
+}
+
+func convertPM5toRSC(d []byte) []byte {
+	runPacket := []byte{0x0, 0x0, 0x0, 0x0}
+
+	// speed
+	pm5Speed := binary.LittleEndian.Uint16(d[4:6])
+	binary.LittleEndian.PutUint16(runPacket[1:3], uint16(float32(pm5Speed)*0.256))
+
+	// cadance
+	pm5SPM := d[6] * 6
+	copy(runPacket[3:], []byte{byte(pm5SPM)})
+
+	return runPacket
 }
 
 func convertPM5toCPM(d []byte) []byte {
