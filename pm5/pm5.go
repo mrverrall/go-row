@@ -11,7 +11,9 @@ import (
 )
 
 var (
-	svcUUID = ble.MustParse("CE060030-43E5-11E4-916C-0800200C9A66")
+	svcUUID   = ble.MustParse("CE060030-43E5-11E4-916C-0800200C9A66")
+	rowChr    = ble.MustParse("CE060032-43E5-11E4-916C-0800200C9A66")
+	strokeChr = ble.MustParse("CE060036-43E5-11E4-916C-0800200C9A66")
 	// multiChr C2 multiplexed information characteristic
 	multiChr = ble.MustParse("CE060080-43E5-11E4-916C-0800200C9A66")
 )
@@ -21,12 +23,6 @@ type Client struct {
 	name   string
 	DataCh chan []byte
 	client ble.Client
-	//characteristics []*ble.Characteristic
-}
-
-type characteristic struct {
-	UUID    ble.UUID
-	Handler ble.NotificationHandler
 }
 
 // NewClient Searches for and connects to the first PM5 it can
@@ -45,7 +41,7 @@ func NewClient() (*Client, error) {
 		}
 		pm5.client = cln
 	}
-	err := pm5.SubscribeToCharacteristics([]ble.UUID{multiChr})
+	err := pm5.SubscribeToCharacteristics([]ble.UUID{rowChr, strokeChr})
 	if err != nil {
 		return nil, fmt.Errorf("Subscription error: %s", err)
 	}

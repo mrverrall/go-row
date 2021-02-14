@@ -65,11 +65,10 @@ func btWorker(done chan bool) {
 
 		for data := range rower.DataCh {
 
-			switch data[0] {
-			case 50:
+			switch len(data) {
+			case 17:
 				runPayload = convertPM5toRSC(data)
-			case 54:
-
+			case 15:
 				cyclePayload = convertPM5toCPM(data)
 				transmit = true
 			}
@@ -98,11 +97,11 @@ func convertPM5toRSC(d []byte) []byte {
 	runPacket := []byte{0x0, 0x0, 0x0, 0x0}
 
 	// speed
-	pm5Speed := binary.LittleEndian.Uint16(d[4:6])
+	pm5Speed := binary.LittleEndian.Uint16(d[3:6])
 	binary.LittleEndian.PutUint16(runPacket[1:3], uint16(float32(pm5Speed)*0.256))
 
 	// cadance
-	pm5SPM := d[6] * 6
+	pm5SPM := d[5] * 6
 	copy(runPacket[3:], []byte{byte(pm5SPM)})
 
 	return runPacket
