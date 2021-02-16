@@ -1,0 +1,8 @@
+1) class for a cycle packet and logic instead of juggling bits
+2) running
+3) move our logic our of the main loop
+4) revisit BT status, controls and error hadleling
+5) create a debug log
+6) makefile/dpkg/snap
+7) struts to import/export their metrics in sensible units, e.g. time in ms ans speed in m/s
+8) discover pm5 on uuid not string matching?

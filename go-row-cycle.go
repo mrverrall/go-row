@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/binary"
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -11,9 +11,8 @@ import (
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
-	"github.com/mrverrall/go-row-cycle/cpm"
 	"github.com/mrverrall/go-row-cycle/pm5"
-	"github.com/mrverrall/go-row-cycle/rsc"
+	"github.com/mrverrall/go-row-cycle/sensor"
 )
 
 var (
@@ -56,33 +55,24 @@ func btWorker(done chan bool) {
 			continue
 		}
 
-		rsc := rsc.NewServer(deviceName)
-		cpm := cpm.NewServer(deviceName)
+		log.Println("starting cycle power sensor")
+		cpm := sensor.NewCyclePower(deviceName, doubleCadence)
 
-		runPayload := []byte{}
-		cyclePayload := []byte{}
-		transmit := false
+		log.Println("starting running speed sensor")
+		rsc := sensor.NewRunningSpeed(deviceName)
 
-		for data := range rower.DataCh {
+		log.Println("advertising sensor services")
+		go ble.AdvertiseNameAndServices(context.Background(), deviceName, rsc.UUID, cpm.UUID)
 
-			switch len(data) {
-			case 17:
-				runPayload = convertPM5toRSC(data)
-			case 15:
-				cyclePayload = convertPM5toCPM(data)
-				transmit = true
+		for data := range rower.StatusCh {
+
+			select {
+			case cpm.DataCh <- data:
+			default:
 			}
-
-			if transmit {
-				select {
-				case cpm.DataCh <- cyclePayload:
-				default:
-				}
-				select {
-				case rsc.DataCh <- runPayload:
-				default:
-				}
-				transmit = false
+			select {
+			case rsc.DataCh <- data:
+			default:
 			}
 		}
 	}
@@ -91,46 +81,4 @@ func btWorker(done chan bool) {
 func unsetBT() {
 	ble.Stop()
 	time.Sleep(time.Second * 5)
-}
-
-func convertPM5toRSC(d []byte) []byte {
-	runPacket := []byte{0x0, 0x0, 0x0, 0x0}
-
-	// speed
-	pm5Speed := binary.LittleEndian.Uint16(d[3:6])
-	binary.LittleEndian.PutUint16(runPacket[1:3], uint16(float32(pm5Speed)*0.256))
-
-	// cadance
-	pm5SPM := d[5] * 6
-	copy(runPacket[3:], []byte{byte(pm5SPM)})
-
-	return runPacket
-}
-
-func convertPM5toCPM(d []byte) []byte {
-	cyclePacket := []byte{0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-
-	// Bluetooth power meters count time in 1/1024th of a second while C2 reports in 100ths
-	// map c2 time to uint32, covert to 1/1024s the take the 2 least significant bytes
-	elapsedTime := make([]byte, 4)
-	copy(elapsedTime[0:], d[:4])
-
-	elapsedTime32 := binary.LittleEndian.Uint32(elapsedTime)
-	elapsedTime32 = (elapsedTime32 * 1024) / 100
-	binary.LittleEndian.PutUint32(elapsedTime, elapsedTime32)
-
-	// Elapsed time
-	copy(cyclePacket[6:], elapsedTime[0:3])
-
-	// Power
-	copy(cyclePacket[2:], d[3:5])
-
-	// Stroke Count
-	if *doubleCadence {
-		spm := binary.LittleEndian.Uint16(d[7:9])
-		binary.LittleEndian.PutUint16(cyclePacket[4:], spm*2)
-	} else {
-		copy(cyclePacket[4:], d[7:9])
-	}
-	return cyclePacket
 }
