@@ -1,39 +1,43 @@
-# go-row-cycle
-A Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Bluetooth Cycle Power Service. This enables you to use a Concept2 rower in cycling games such a Zwift. go-row-cycle transmits both power and cadence (spm).
+# go-row
+Go-row is a Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Bluetooth Cycle Power and Running Speed services.
+
+This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 
 ## Good to know...
 * Runs on Debian, Ubuntu, Raspbian... etc.
-* Runs well on a Raspberry Pi Zero W
+* Runs perfectly on a Raspberry Pi Zero W
 
 ## But specifically..
-* Requires Bluetooth 4.1+ chipsets (can run clients and servers simultaneously)
-* Requires kernel support for HCI_CHANNEL_USER (v3.14+)
+* As mentioned, works great on a Raspberry Pi Zero W
+* Requires Bluetooth 4.1+ chipsets (allowing clients and servers to run simultaneously)
 
-# TL;DR
+# Quick Start
+Assuming an clean install of Raspbian on an Raspberry Pi Zero W...
+
     apt-get install golang
-    go get "github.com/mrverrall/go-row-cycle"
-    go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
-    sudo ./go-row-cycle
+    go get "github.com/mrverrall/go-row"
+    go build ~/go/src/github.com/mrverrall/go-row/go-row.go
+    sudo ./go-row
 
-You can also set the -dc flag to double the rowers SPM to a more realistic cadence,
+Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 
-    sudo ./go-row-cycle -dc
+# Need more info?
 
-# Obtaining and Building
-To compile go-row-cycle.go into an executable the Go compliler is required:
+## Obtaining and Building
+To compile go-row into an executable the Go compliler is required, to install on Raspbian do,
 
     sudo apt-get install golang
 
-The easiest way to get go-row-cycle along with all it's dependancies is using 'go get':
+Use 'go get' to download go-row and all it's dependancies,
 
-    go get "github.com/mrverrall/go-row-cycle"
+    go get "github.com/mrverrall/go-row"
 
-Then build:
+Then build with,
 
-    go build ~/go/src/github.com/mrverrall/go-row-cycle/go-row-cycle.go
+    go build ~/go/src/github.com/mrverrall/go-row/go-row.go
 
-# First Row
-Ensure your BT device meets minimum version (4.1) Raspberry Pis with built in Bluetooth chipsets are fine.
+## First Row
+Ensure your BT device meets minimum version (4.1). Did I mention Raspberry Pis with built in Bluetooth chipsets are fine?
 
     sudo hciconfig hci0 up
     hciconfig -a
@@ -41,47 +45,38 @@ Ensure your BT device meets minimum version (4.1) Raspberry Pis with built in Bl
 The returned output includes your HCI version, similar to:
 
     hci0:   Type: Primary  Bus: UART
-            BD Address: B8:27:EB:31:49:4A  ACL MTU: 1021:8  SCO MTU: 64:1
-            UP RUNNING
-            RX bytes:1308 acl:0 sco:0 events:66 errors:0
-            TX bytes:838 acl:0 sco:0 commands:66 errors:0
-            Features: 0xbf 0xfe 0xcf 0xfe 0xdb 0xff 0x7b 0x87
-            Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
-            Link policy: RSWITCH SNIFF
-            Link mode: SLAVE ACCEPT
-            Name: 'BCM43438A1 37.4MHz Raspberry Pi 3-0062'
-            Class: 0x000000
-            Service Classes: Unspecified
-            Device Class: Miscellaneous,
+            ...
             HCI Version: 4.1 (0x7)  Revision: 0x168
-            LMP Version: 4.1 (0x7)  Subversion: 0x2209
-            Manufacturer: Broadcom Corporation (15)
+            ...
 
-go-row-cycle uses HCI sockets exclusively. If you have Bluez installed then the bluetooth service should be disabled.
+Go-row needs control of your bluetooth hardware. This can be done by either running with with sudo or assigning the capabilities to the go-row executable like so,
 
-Before starting go-row-cycle ensure BLE device is down:
+    sudo setcap 'cap_net_raw,cap_net_admin=eip' ./go-row
 
-    sudo hciconfig hci0 down
+Now you are ready to run (or cycle)!
 
-If you have BlueZ installed stop the built-in bluetooth server, which may interfere:
+    ./go-row
 
-    sudo service bluetooth stop
+## Connecting to your Rower and Game
+While go-row is running select 'connect' from the main PM5 menu, connection is then automatic.
 
-If you plan to use go-row-cycle on boot disable the bluetooth service entirly:
-
-    sudo service bluetooth mask
-
-go-row-cycle requires control of your bluetooth hardware, either via running with sudo or assigning the appropriate capabilities to the go-row-cycle executable.
-
-    sudo setcap 'cap_net_raw,cap_net_admin=eip' ./go-row-cycle
-
-Run!
-
-    ./go-row-cycle
-
-# Connecting to your Rower and Game
-While go-row-cyle is running simply turn on wireless on the PM5 in the usual manner, connection is automatic.
-
-Once connected to a PM5 go-row-cycle will advertise the Cycle Power Service over Bluetooth. Within your Bluetooth enabled cycle game select the 'go-row-cycle' device for power and cadance.
+Once connected to a PM5 go-row will advertise the cycle and running services over bluetooth. Within your game/app select the 'go-row' device.
 
 Row!
+
+# Installing as a service
+It's easy to run go-row automatically on boot. This is ideal if you want a 'plug and play' setup without needing your device (like a Raspberry Pi Zero W) plugged into anything but power. In Raspbian this is acheived with systemd service.
+
+[An example systemd service file is included in this repository](https://github.com/mrverrall/go-row/blob/main/go-row.service).
+
+To install as a boot service with systemd, edit the "ExecStart" path in the service file to the location your compiled go-row executable.
+
+Copy your service file to '/var/lib/systemd/system/go-row.service'. then,
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable go-row.service
+    sudo systemctl start go-row.service
+
+Check your service is ruuning with,
+
+    sudo systemctl status go-row.servic
