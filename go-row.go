@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -16,15 +15,13 @@ import (
 )
 
 var (
-	deviceName    = "go-row"
-	doubleCadence = flag.Bool("dc", false, "double spm for cadance")
+	deviceName = "go-row"
 )
 
 func main() {
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
-	flag.Parse()
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -56,7 +53,7 @@ func btWorker(done chan bool) {
 		}
 
 		log.Println("starting cycle power sensor")
-		cpm := sensor.NewCyclePower(deviceName, doubleCadence)
+		cpm := sensor.NewCyclePower(deviceName)
 
 		log.Println("starting running speed sensor")
 		rsc := sensor.NewRunningSpeed(deviceName)

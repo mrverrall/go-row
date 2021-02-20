@@ -8,7 +8,7 @@ import (
 )
 
 // NewCyclePower Create a new Cycle Power Service
-func NewCyclePower(deviceName string, dc *bool) *Sensor {
+func NewCyclePower(deviceName string) *Sensor {
 	cpm := &Sensor{
 		Name:   "go-row",
 		UUID:   ble.UUID16(0x1818),
