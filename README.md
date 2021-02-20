@@ -79,4 +79,4 @@ Copy your service file to '/var/lib/systemd/system/go-row.service'. then,
 
 Check your service is ruuning with,
 
-    sudo systemctl status go-row.servic
+    sudo systemctl status go-row.service
