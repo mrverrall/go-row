@@ -1,0 +1,13 @@
+[Unit]
+Description=go-row systemd service.
+Conflicts=bluetooth.service
+
+[Service]
+Type=simple
+# Use the correct path to your go-row-cycle executable below
+ExecStart=/usr/local/bin/go-row
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
