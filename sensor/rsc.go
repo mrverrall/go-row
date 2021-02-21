@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/go-ble/ble"
-	"github.com/mrverrall/go-row-cycle/pm5"
+	"github.com/mrverrall/go-row/pm5"
 )
 
 // NewRunningSpeed Create a new Running Speed and Cadance Service
