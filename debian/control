@@ -1,0 +1,16 @@
+Source: go-row
+Section: devel
+Priority: optional
+Maintainer: Paul Verrall <mrverrall@gmail.com>
+Build-Depends: debhelper (>= 11),
+               dh-golang,
+               golang-any
+Standards-Version: 4.2.1
+Homepage: https://github.com/mrverrall/go-row
+
+Package: go-row
+Architecture: any
+Built-Using: ${misc:Built-Using}
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Description: A Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Cycle Power and a Running Speed Service. This enables you to use a Concept2 rower with cycling/running games such a Zwift.
