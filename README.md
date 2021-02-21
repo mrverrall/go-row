@@ -12,7 +12,7 @@ This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 * Requires Bluetooth 4.1+ chipsets (allowing clients and servers to run simultaneously)
 
 # Quick Start
-Assuming an clean install of Raspbian on an Raspberry Pi Zero W...
+Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
 
     apt-get install golang
     go get "github.com/mrverrall/go-row"
