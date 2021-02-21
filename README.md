@@ -12,11 +12,18 @@ This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 * Requires Bluetooth 4.1+ chipsets (allowing clients and servers to run simultaneously)
 
 # Quick Start
+## From Source
 Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
 
     apt-get install golang
     go get "github.com/mrverrall/go-row"
     sudo ~/go/bin/go-row
+
+## Raspberry Pi package (deb)
+    # Download
+    wget https://github.com/mrverrall/go-row/releases/download/v0.0.0-alpha/go-row_0.0.0-alpha_armhf.deb
+    # Install
+    sudo dpkg -i go-row_0.0.0-alpha_armhf.deb
 
 Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 
