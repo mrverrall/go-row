@@ -16,8 +16,7 @@ Assuming an clean install of Raspbian on an Raspberry Pi Zero W...
 
     apt-get install golang
     go get "github.com/mrverrall/go-row"
-    go build ~/go/src/github.com/mrverrall/go-row/go-row.go
-    sudo ./go-row
+    sudo ~/go/bin/go-row
 
 Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 
@@ -32,9 +31,9 @@ Use 'go get' to download go-row and all it's dependancies,
 
     go get "github.com/mrverrall/go-row"
 
-Then build with,
+This also builds go-row so you can now run it like so,
 
-    go build ~/go/src/github.com/mrverrall/go-row/go-row.go
+    sudo ~/go/bin/go-row
 
 ## First Row
 Ensure your BT device meets minimum version (4.1). Did I mention Raspberry Pis with built in Bluetooth chipsets are fine?
