@@ -22,7 +22,7 @@ Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
     sudo ~/go/bin/go-row
 
 ## Raspberry Pi package (deb)
-Packages can be download from the [releases page](https://github.com/mrverrall/go-row/releases/tag/v0.0.0-alpha). Install in your usual way, here is an example via the command line, perfect for a headless system.
+Packages can be download from the [releases page](https://github.com/mrverrall/go-row/releases/tag/v0.0.0-alpha). Install in your usual way, here is an example via the command line. This method also automatically installs go-row as a service on boot, perfect for a headless system.
 
     # Download
     wget https://github.com/mrverrall/go-row/releases/download/v0.0.0-alpha/go-row_0.0.0-alpha_armhf.deb
@@ -74,6 +74,9 @@ Once connected to a PM5 go-row will advertise the cycle and running services ove
 Row!
 
 # Installing as a service
+
+__N.B.__ This is not needed if you installed go-row using the debian package.
+
 It's easy to run go-row automatically on boot. This is ideal if you want a 'plug and play' setup without needing your device (like a Raspberry Pi Zero W) plugged into anything but power. In Raspbian this is acheived with systemd service.
 
 [An example systemd service file is included in this repository](https://github.com/mrverrall/go-row/blob/main/go-row.service).
