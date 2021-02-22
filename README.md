@@ -16,12 +16,6 @@ Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 * Requires Bluetooth 4.1+ chipsets (allowing clients and servers to run simultaneously)
 
 # Quick Start
-## From Source
-Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
-
-    apt-get install golang
-    go get "github.com/mrverrall/go-row"
-    sudo ~/go/bin/go-row
 
 ## Raspberry Pi package (deb)
 Packages can be download from the [releases page](https://github.com/mrverrall/go-row/releases/tag/v0.0.0-alpha). Install in your usual way, here is an example via the command line. This method also automatically installs go-row as a service on boot, perfect for a headless system.
@@ -31,6 +25,13 @@ Packages can be download from the [releases page](https://github.com/mrverrall/g
     
     # Install
     sudo dpkg -i go-row_0.0.0-alpha_armhf.deb
+
+## From Source
+Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
+
+    apt-get install golang
+    go get "github.com/mrverrall/go-row"
+    sudo ~/go/bin/go-row
 
 ## Connecting to your Rower and Game
 While go-row is running select 'connect' from the main PM5 menu, connection is then automatic.
