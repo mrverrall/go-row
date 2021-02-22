@@ -26,6 +26,10 @@ Packages can be download from the [releases page](https://github.com/mrverrall/g
     # Install
     sudo dpkg -i go-row_0.0.0-alpha_armhf.deb
 
+Go-row should now be running as a service, you can check this with,
+    
+    systemctl status go-row
+
 ## From Source
 Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
 
