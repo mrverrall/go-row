@@ -1,6 +1,8 @@
 # go-row
 Go-row is a Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Bluetooth Cycle Power and Running Speed services.
 
+__You can now install gow-row as a simple [deb package for Raspbian](https://github.com/mrverrall/go-row#raspberry-pi-package-deb).__
+
 This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 
 Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
