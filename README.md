@@ -32,42 +32,6 @@ Packages can be download from the [releases page](https://github.com/mrverrall/g
     # Install
     sudo dpkg -i go-row_0.0.0-alpha_armhf.deb
 
-# Need more info?
-
-## Obtaining and Building
-To compile go-row into an executable the Go compliler is required, to install on Raspbian do,
-
-    sudo apt-get install golang
-
-Use 'go get' to download go-row and all it's dependancies,
-
-    go get "github.com/mrverrall/go-row"
-
-This also builds go-row so you can now run it like so,
-
-    sudo ~/go/bin/go-row
-
-## First Row
-Ensure your BT device meets minimum version (4.1). Did I mention Raspberry Pis with built in Bluetooth chipsets are fine?
-
-    sudo hciconfig hci0 up
-    hciconfig -a
-
-The returned output includes your HCI version, similar to:
-
-    hci0:   Type: Primary  Bus: UART
-            ...
-            HCI Version: 4.1 (0x7)  Revision: 0x168
-            ...
-
-Go-row needs control of your bluetooth hardware. This can be done by either running with with sudo or assigning the capabilities to the go-row executable like so,
-
-    sudo setcap 'cap_net_raw,cap_net_admin=eip' ./go-row
-
-Now you are ready to run (or cycle)!
-
-    ./go-row
-
 ## Connecting to your Rower and Game
 While go-row is running select 'connect' from the main PM5 menu, connection is then automatic.
 
@@ -75,7 +39,7 @@ Once connected to a PM5 go-row will advertise the cycle and running services ove
 
 Row!
 
-# Installing as a service
+## Installing as a service
 
 __N.B.__ This is not needed if you installed go-row using the debian package.
 
