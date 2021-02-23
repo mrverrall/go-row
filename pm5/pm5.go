@@ -25,10 +25,12 @@ type Client struct {
 type Status struct {
 	StrokeCount uint16        // Total strokes for session
 	LastStroke  time.Duration // Time marker for last stroke event
-	Spm         int           // Strokes per miniute
 	Power       uint16        // Power in watts
 	Speed       uint16        // Speed in 0.001m/s
 	RowState    byte          // Are we still rowing?
+	Spm         byte          // Strokes per miniute
+	Heartrate   byte          // Heartrate
+
 }
 
 type subscription struct {
@@ -143,7 +145,8 @@ func (pm5 *Client) notifyHandler31(data []byte) {
 
 func (pm5 *Client) notifyHandler32(data []byte) {
 	pm5.Speed = binary.LittleEndian.Uint16(data[3:5])
-	pm5.Spm = int(data[5])
+	pm5.Heartrate = data[6]
+	pm5.Spm = data[5]
 }
 
 func (pm5 *Client) notifyHandler36(data []byte) {

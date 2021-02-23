@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
+	"github.com/mrverrall/go-row/peripheral"
 	"github.com/mrverrall/go-row/pm5"
-	"github.com/mrverrall/go-row/sensor"
 )
 
 var (
@@ -53,10 +53,10 @@ func btWorker(done chan bool) {
 		}
 
 		log.Println("starting cycle power sensor")
-		cpm := sensor.NewCyclePower(deviceName)
+		cpm := peripheral.NewCyclePower(deviceName)
 
 		log.Println("starting running speed sensor")
-		rsc := sensor.NewRunningSpeed(deviceName)
+		rsc := peripheral.NewRunningSpeed(deviceName)
 
 		log.Println("advertising sensor services")
 		go ble.AdvertiseNameAndServices(context.Background(), deviceName, rsc.UUID, cpm.UUID)
