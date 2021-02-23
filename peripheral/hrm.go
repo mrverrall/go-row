@@ -9,7 +9,7 @@ import (
 func NewHRM(deviceName string) *Sensor {
 	rsc := &Sensor{
 		Name:   "go-row",
-		UUID:   ble.UUID16(0x18d),
+		UUID:   ble.UUID16(0x180d),
 		DataCh: make(chan pm5.Status, 1),
 		characteristics: []characteristic{
 			{
