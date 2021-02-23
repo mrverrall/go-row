@@ -4,7 +4,7 @@ Conflicts=bluetooth.service
 
 [Service]
 Type=simple
-# Use the correct path to your go-row-cycle executable below
+# Use the correct path to your go-row executable below
 ExecStart=/usr/local/bin/go-row
 Restart=always
 RestartSec=10

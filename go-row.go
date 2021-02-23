@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
-	"github.com/mrverrall/go-row-cycle/pm5"
-	"github.com/mrverrall/go-row-cycle/sensor"
+	"github.com/mrverrall/go-row/pm5"
+	"github.com/mrverrall/go-row/sensor"
 )
 
 var (

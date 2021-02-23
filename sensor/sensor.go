@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-ble/ble"
-	"github.com/mrverrall/go-row-cycle/pm5"
+	"github.com/mrverrall/go-row/pm5"
 )
 
 // Sensor a ble sensor fit for both CPM and RSC and more...
