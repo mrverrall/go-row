@@ -44,6 +44,16 @@ func btWorker(done chan bool) {
 		}
 		ble.SetDefaultDevice(d)
 
+		sensors := peripheral.Sensors{
+			peripheral.NewCyclePower(deviceName),
+			peripheral.NewRunningSpeed(deviceName),
+			peripheral.NewHRM(deviceName),
+		}
+
+		log.Println("advertising sensor services")
+		go ble.AdvertiseNameAndServices(context.Background(), deviceName, sensors.UUIDs()...)
+		<-done
+
 		log.Printf("searching for PM5...")
 		rower, err := pm5.NewClient()
 
@@ -52,24 +62,12 @@ func btWorker(done chan bool) {
 			continue
 		}
 
-		log.Println("starting cycle power sensor")
-		cpm := peripheral.NewCyclePower(deviceName)
-
-		log.Println("starting running speed sensor")
-		rsc := peripheral.NewRunningSpeed(deviceName)
-
-		log.Println("advertising sensor services")
-		go ble.AdvertiseNameAndServices(context.Background(), deviceName, rsc.UUID, cpm.UUID)
-
 		for data := range rower.StatusCh {
-
-			select {
-			case cpm.DataCh <- data:
-			default:
-			}
-			select {
-			case rsc.DataCh <- data:
-			default:
+			for _, s := range sensors {
+				select {
+				case s.DataCh <- data:
+				default:
+				}
 			}
 		}
 	}
