@@ -1,4 +1,4 @@
-package sensor
+package peripheral
 
 import (
 	"fmt"
@@ -8,6 +8,18 @@ import (
 	"github.com/go-ble/ble"
 	"github.com/mrverrall/go-row/pm5"
 )
+
+// Sensors a sets of Sensors
+type Sensors []*Sensor
+
+// UUIDs of sensors in a Set
+func (s Sensors) UUIDs() []ble.UUID {
+	out := make([]ble.UUID, len(s))
+	for _, s := range s {
+		out = append(out, s.UUID)
+	}
+	return out
+}
 
 // Sensor a ble sensor fit for both CPM and RSC and more...
 type Sensor struct {
@@ -35,7 +47,6 @@ type characteristic struct {
 type trasform func(pm5.Status, []byte) []byte
 
 // Initalise the ble service and advertise
-
 func (s *Sensor) initalise() (*Sensor, error) {
 	s.Service = ble.NewService(s.UUID)
 	s.timeout = time.Second * 4

@@ -1,4 +1,4 @@
-package sensor
+package peripheral
 
 import (
 	"encoding/binary"
