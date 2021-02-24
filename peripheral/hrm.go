@@ -21,7 +21,9 @@ func NewHRM(deviceName string) *Sensor {
 		},
 		trasform: func(in pm5.Status, out []byte) []byte {
 			//BPM
-			copy(out[1:], []byte{in.Heartrate}[:1])
+			if in.Heartrate < 255 {
+				out[1] = in.Heartrate
+			}
 			return out
 		},
 	}
