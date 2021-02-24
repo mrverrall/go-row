@@ -27,6 +27,7 @@ type Sensor struct {
 	DataCh         chan pm5.Status
 	timeout        time.Duration
 	defaultPayload []byte
+	// transform function for converting input values to payload
 	trasform
 	characteristics
 	ble.UUID
@@ -95,9 +96,9 @@ func (s *Sensor) notifyHandler(req ble.Request, n ble.Notifier) {
 			log.Println("Client un-subscribed for Notifications.")
 			return
 		case pm5status := <-s.DataCh:
-			dpl := s.defaultPayload
-			out := s.trasform(pm5status, dpl)
-			_, err := n.Write(out)
+			pl := make([]byte, len(s.defaultPayload))
+			copy(pl, s.defaultPayload)
+			_, err := n.Write(s.trasform(pm5status, pl))
 			if err != nil {
 				log.Printf("Client missing for notification: %s", err)
 				return
