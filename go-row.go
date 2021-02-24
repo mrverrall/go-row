@@ -44,6 +44,14 @@ func btWorker(done chan bool) {
 		}
 		ble.SetDefaultDevice(d)
 
+		log.Printf("searching for PM5...")
+		rower, err := pm5.NewClient()
+
+		if err != nil {
+			log.Printf("PM5 error: %s", err)
+			continue
+		}
+
 		sensors := peripheral.Sensors{
 			peripheral.NewCyclePower(deviceName),
 			peripheral.NewRunningSpeed(deviceName),
@@ -52,15 +60,6 @@ func btWorker(done chan bool) {
 
 		log.Println("advertising sensor services")
 		go ble.AdvertiseNameAndServices(context.Background(), deviceName, sensors.UUIDs()...)
-		<-done
-
-		log.Printf("searching for PM5...")
-		rower, err := pm5.NewClient()
-
-		if err != nil {
-			log.Printf("PM5 error: %s", err)
-			continue
-		}
 
 		for data := range rower.StatusCh {
 			for _, s := range sensors {
