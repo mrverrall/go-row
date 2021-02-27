@@ -14,7 +14,7 @@ type Sensors []*Sensor
 
 // UUIDs of sensors in a Set
 func (s Sensors) UUIDs() []ble.UUID {
-	out := make([]ble.UUID, len(s))
+	out := make([]ble.UUID, 0, len(s))
 	for _, s := range s {
 		out = append(out, s.UUID)
 	}
