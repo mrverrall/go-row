@@ -1,3 +1,9 @@
+go-row (0.0.1-2) unstable; urgency=medium
+
+  * Fix issue with nil sensor advertisement preventing iOS devices connecting
+
+ --  Paul Verrall <mrverrall@gmail.com>  Sat, 27 Feb 2021 13:40:56 +0000
+
 go-row (0.0.1-1) unstable; urgency=medium
 
   * Zero HR if PM5 claims 255 (disconnected status)
