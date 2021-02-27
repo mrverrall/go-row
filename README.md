@@ -21,10 +21,10 @@ Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 Packages can be download from the [releases page](https://github.com/mrverrall/go-row/releases). Install in your usual way, here is an example via the command line. This method also automatically installs go-row as a service on boot, perfect for a headless system.
 
     # Download
-    wget https://github.com/mrverrall/go-row/releases/download/v0.0.1-0/go-row_0.0.1-1_armhf.deb
+    wget https://github.com/mrverrall/go-row/releases/download/v0.0.1-0/go-row_0.0.1-2_armhf.deb
     
     # Install
-    sudo dpkg -i go-row_0.0.1-1_armhf.deb
+    sudo dpkg -i go-row_0.0.1-2_armhf.deb
 
 Go-row should now be running as a service, you can check this with,
     
