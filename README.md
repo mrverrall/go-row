@@ -7,14 +7,6 @@ This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 
 Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 
-## Good to know...
-* Runs on Debian, Ubuntu, Raspbian... etc.
-* Runs perfectly on a Raspberry Pi Zero W
-
-## But specifically..
-* As mentioned, works great on a Raspberry Pi Zero W
-* Requires Bluetooth 4.1+ chipsets (allowing clients and servers to run simultaneously)
-
 # Quick Start
 
 ## Raspberry Pi package (deb)
@@ -47,8 +39,6 @@ Row!
 ## Installing as a service
 
 __N.B.__ This is not needed if you installed go-row using the debian package.
-
-It's easy to run go-row automatically on boot. This is ideal if you want a 'plug and play' setup without needing your device (like a Raspberry Pi Zero W) plugged into anything but power. In Raspbian this is acheived with systemd service.
 
 [An example systemd service file is included in this repository](https://github.com/mrverrall/go-row/blob/main/go-row.service).
 
