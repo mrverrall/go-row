@@ -1,16 +1,14 @@
 # go-row
-Go-row is a Bluetooth LE bridge, written in Go, to convert a Concept2 PM5 rower into a Bluetooth Cycle Power and Running Speed services.
+Go-row is a Bluetooth LE bridge written in Go. It re-transmits a Concept2 PM5 rowers metrics as Bluetooth 'Cycle Power' and 'Running Speed' services. This allows you to use a Concept2 rower in cycling or runnning games such a Zwift.
 
 __You can now install gow-row as a simple [deb package for Raspbian](https://github.com/mrverrall/go-row#raspberry-pi-package-deb).__
-
-This lets you to use a Concept2 rower in cycling/runnning games such a Zwift.
 
 Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 
 # Quick Start
 
 ## Raspberry Pi package (deb)
-Packages can be download from the [releases page](https://github.com/mrverrall/go-row/releases). Install in your usual way, here is an example via the command line. This method also automatically installs go-row as a service on boot, perfect for a headless system.
+The go-row deb package can be download from the [releases page](https://github.com/mrverrall/go-row/releases). Below is an example of installing via the command line. The package will install go-row as a service that starts on boot, perfect for a headless system.
 
     # Download
     wget https://github.com/mrverrall/go-row/releases/download/v0.0.1-2/go-row_0.0.1-2_armhf.deb
@@ -32,7 +30,7 @@ Assuming a clean install of Raspbian on an Raspberry Pi Zero W...
 ## Connecting to your Rower and Game
 While go-row is running select 'connect' from the main PM5 menu, connection is then automatic.
 
-Once connected to a PM5 go-row will advertise the cycle and running services over bluetooth. Within your game/app select the 'go-row' device.
+Once connected to a PM5 go-row will advertise the cycle and running services. Within your game/app select the 'go-row' device.
 
 Row!
 
