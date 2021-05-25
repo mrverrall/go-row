@@ -8,7 +8,7 @@ Cycling cadance is set to 3x the rowing SPM and running cadance 6x.
 # Quick Start
 
 ## Raspberry Pi package (deb)
-The go-row deb package can be download from the [releases page](https://github.com/mrverrall/go-row/releases). Below is an example of installing via the command line. The package will install go-row as a service that starts on boot, perfect for a headless system.
+The go-row deb package can be download from the [releases page](https://github.com/mrverrall/go-row/releases/latest). Below is an example of installing via the command line. The package will install go-row as a service that starts on boot, perfect for a headless system.
 
     # Download
     wget https://github.com/mrverrall/go-row/releases/download/v0.0.1-2/go-row_0.0.1-2_armhf.deb
