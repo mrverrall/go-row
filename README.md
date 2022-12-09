@@ -48,6 +48,6 @@ Copy your service file to '/var/lib/systemd/system/go-row.service'. then,
     sudo systemctl enable go-row.service
     sudo systemctl start go-row.service
 
-Check your service is ruuning with,
+Check your service is running with,
 
     sudo systemctl status go-row.service
