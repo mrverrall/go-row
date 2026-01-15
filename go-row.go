@@ -59,7 +59,8 @@ func btWorker(done chan bool) {
 		}
 
 		log.Println("advertising sensor services")
-		go ble.AdvertiseNameAndServices(context.Background(), deviceName, sensors.UUIDs()...)
+		advertiseCtx, cancel := context.WithCancel(context.Background())
+		go ble.AdvertiseNameAndServices(advertiseCtx, deviceName, sensors.UUIDs()...)
 
 		for data := range rower.StatusCh {
 			for _, s := range sensors {
@@ -69,6 +70,10 @@ func btWorker(done chan bool) {
 				}
 			}
 		}
+
+		// PM5 disconnected, clean up advertising
+		cancel()
+		log.Println("stopped advertising sensor services")
 	}
 }
 
