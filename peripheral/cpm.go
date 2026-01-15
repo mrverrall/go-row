@@ -33,7 +33,7 @@ func NewCyclePower(deviceName string) *Sensor {
 				payload:  []byte{0x0},
 			},
 		},
-		trasform: func(in pm5.Status, out []byte) []byte {
+		transform: func(in pm5.Status, out []byte) []byte {
 			// Elapsed Time 1/1024 s
 			binary.LittleEndian.PutUint16(out[6:], uint16(in.LastStroke.Seconds()*1024))
 			// Power
@@ -45,6 +45,6 @@ func NewCyclePower(deviceName string) *Sensor {
 		},
 	}
 
-	cpm.initalise()
+	cpm.initialise()
 	return cpm
 }

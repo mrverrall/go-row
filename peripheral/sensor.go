@@ -28,7 +28,7 @@ type Sensor struct {
 	timeout        time.Duration
 	defaultPayload []byte
 	// transform function for converting input values to payload
-	trasform
+	transform
 	characteristics
 	ble.UUID
 	*ble.Service
@@ -45,10 +45,10 @@ type characteristic struct {
 	uuid     ble.UUID
 }
 
-type trasform func(pm5.Status, []byte) []byte
+type transform func(pm5.Status, []byte) []byte
 
-// Initalise the ble service and advertise
-func (s *Sensor) initalise() (*Sensor, error) {
+// Initialise the ble service and advertise
+func (s *Sensor) initialise() (*Sensor, error) {
 	s.Service = ble.NewService(s.UUID)
 	s.timeout = time.Second * 4
 
@@ -93,12 +93,12 @@ func (s *Sensor) notifyHandler(req ble.Request, n ble.Notifier) {
 	for {
 		select {
 		case <-n.Context().Done():
-			log.Println("Client un-subscribed for Notifications.")
+			log.Println("Client unsubscribed for Notifications.")
 			return
 		case pm5status := <-s.DataCh:
 			pl := make([]byte, len(s.defaultPayload))
 			copy(pl, s.defaultPayload)
-			_, err := n.Write(s.trasform(pm5status, pl))
+			_, err := n.Write(s.transform(pm5status, pl))
 			if err != nil {
 				log.Printf("Client missing for notification: %s", err)
 				return

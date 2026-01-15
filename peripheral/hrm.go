@@ -19,7 +19,7 @@ func NewHRM(deviceName string) *Sensor {
 				payload:  []byte{0x0, 0x0},
 			},
 		},
-		trasform: func(in pm5.Status, out []byte) []byte {
+		transform: func(in pm5.Status, out []byte) []byte {
 			//BPM
 			if in.Heartrate < 255 {
 				out[1] = in.Heartrate
@@ -28,6 +28,6 @@ func NewHRM(deviceName string) *Sensor {
 		},
 	}
 
-	rsc.initalise()
+	rsc.initialise()
 	return rsc
 }
