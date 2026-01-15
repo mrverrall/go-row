@@ -139,30 +139,40 @@ func (pm5 *Client) filterAdvert(a ble.Advertisement) bool {
 }
 
 func (pm5 *Client) notifyHandler31(data []byte) {
+	pm5.mutex.Lock()
 	pm5.RowState = data[9]
+	pm5.mutex.Unlock()
 	pm5.notify()
 }
 
 func (pm5 *Client) notifyHandler32(data []byte) {
+	pm5.mutex.Lock()
 	pm5.Speed = binary.LittleEndian.Uint16(data[3:5])
 	pm5.Heartrate = data[6]
 	pm5.Spm = data[5]
+	pm5.mutex.Unlock()
 }
 
 func (pm5 *Client) notifyHandler36(data []byte) {
+	pm5.mutex.Lock()
 	pm5.LastStroke = pm5Time2Duration(data)
 	pm5.Power = binary.LittleEndian.Uint16(data[3:5])
 	pm5.StrokeCount = binary.LittleEndian.Uint16(data[7:9])
+	pm5.mutex.Unlock()
 }
 
 func (pm5 *Client) notify() {
+	pm5.mutex.Lock()
 	if pm5.RowState != 1 {
 		pm5.Power = 0
 		pm5.Speed = 0
 		pm5.Spm = 0
 	}
+	status := pm5.Status
+	pm5.mutex.Unlock()
+
 	select {
-	case pm5.StatusCh <- pm5.Status:
+	case pm5.StatusCh <- status:
 	default:
 	}
 }
